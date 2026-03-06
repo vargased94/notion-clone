@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f7f6f3;
+    --bg-sidebar: #f7f6f3;
+    --bg-hover: #efefef;
+    --bg-active: #e8e8e8;
+    --bg-input: #f7f6f3;
+    --bg-callout: #f1f1ef;
+    --bg-table-header: #f7f6f3;
+    --bg-table-row: #ffffff;
+    --bg-toggle: #e0e0e0;
+    --text-primary: #37352f;
+    --text-secondary: #6b6b6b;
+    --text-muted: #9b9b9b;
+    --text-placeholder: #c7c7c7;
+    --border: #e3e2de;
+    --border-light: #ebebea;
+    --divider: #e9e9e7;
+    --green-primary: #2ecc71;
+    --green-dark: #27ae60;
+    --green-light: #4ade80;
+    --green-muted: #e6f7ee;
+  }
+
+  .dark {
+    --bg-primary: #191919;
+    --bg-secondary: #202020;
+    --bg-sidebar: #1e1e1e;
+    --bg-hover: #2f2f2f;
+    --bg-active: #333333;
+    --bg-input: #252525;
+    --bg-callout: #1a2e1a;
+    --bg-table-header: #262626;
+    --bg-table-row: #1f1f1f;
+    --bg-toggle: #3a3a3a;
+    --text-primary: #e8e8e8;
+    --text-secondary: #9b9b9b;
+    --text-muted: #6b6b6b;
+    --text-placeholder: #505050;
+    --border: #2e2e2e;
+    --border-light: #383838;
+    --divider: #2a2a2a;
+    --green-primary: #2ecc71;
+    --green-dark: #27ae60;
+    --green-light: #4ade80;
+    --green-muted: #1a3a2a;
+  }
+
+  * {
+    @apply border-notion-border;
+  }
+
+  body {
+    @apply bg-notion-bg-primary text-notion-text-primary antialiased;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--bg-toggle) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: var(--bg-toggle);
+    border-radius: 3px;
+  }
+}
