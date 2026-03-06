@@ -28,6 +28,8 @@ import { EmbedExtension } from '../extensions/EmbedExtension'
 import { EquationExtension } from '../extensions/EquationExtension'
 import { TableOfContentsExtension } from '../extensions/TableOfContentsExtension'
 import { supabase } from '@/lib/supabase'
+import { useDatabase } from '@/features/database/hooks/useDatabase'
+import { useWorkspace } from '@/features/workspace/hooks/useWorkspace'
 
 const lowlight = createLowlight(common)
 
@@ -35,9 +37,10 @@ interface BlockEditorProps {
   pageId: string
   initialContent?: string
   onUpdate?: (html: string) => void
+  onDatabaseCreated?: (databaseId: string) => void
 }
 
-export function BlockEditor({ pageId, initialContent, onUpdate }: BlockEditorProps) {
+export function BlockEditor({ pageId, initialContent, onUpdate, onDatabaseCreated }: BlockEditorProps) {
   const [slashState, setSlashState] = useState<SlashCommandState>({
     active: false,
     query: '',
@@ -187,7 +190,7 @@ export function BlockEditor({ pageId, initialContent, onUpdate }: BlockEditorPro
   }, [pageId, editor, initialContent])
 
   const handleSlashSelect = useCallback(
-    (item: SlashMenuItem) => {
+    async (item: SlashMenuItem) => {
       if (!editor || !slashState.range) return
 
       editor.chain().focus().deleteRange(slashState.range).run()
@@ -252,6 +255,42 @@ export function BlockEditor({ pageId, initialContent, onUpdate }: BlockEditorPro
         case 'tableOfContents':
           editor.chain().focus().setTableOfContents().run()
           break
+        case 'database':
+        case 'database-board':
+        case 'database-list':
+        case 'database-gallery':
+        case 'database-calendar': {
+          const workspace = useWorkspace.getState().workspace
+          if (!workspace) break
+          const viewType = item.type === 'database' ? 'table'
+            : item.type === 'database-board' ? 'board'
+            : item.type === 'database-list' ? 'list'
+            : item.type === 'database-gallery' ? 'gallery'
+            : 'calendar'
+          const { createDatabase, addView, addProperty } = useDatabase.getState()
+          const db = await createDatabase(pageId, workspace.id)
+          if (db && viewType !== 'table') {
+            // Default view is table, add the requested view type and make it active
+            const view = await addView(viewType.charAt(0).toUpperCase() + viewType.slice(1) + ' view', viewType)
+            if (view) useDatabase.getState().setActiveView(view.id)
+          }
+          if (db && (viewType === 'board' || viewType === 'calendar')) {
+            // Add a Status property for board, or Date property for calendar
+            if (viewType === 'board') {
+              await addProperty('Status', 'status', {
+                options: [
+                  { id: crypto.randomUUID(), name: 'Not started', color: 'gray' },
+                  { id: crypto.randomUUID(), name: 'In progress', color: 'blue' },
+                  { id: crypto.randomUUID(), name: 'Done', color: 'green' },
+                ],
+              })
+            } else {
+              await addProperty('Date', 'date')
+            }
+          }
+          if (db) onDatabaseCreated?.(db.id)
+          break
+        }
         default:
           break
       }

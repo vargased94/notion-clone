@@ -1,17 +1,38 @@
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { usePages } from '../hooks/usePages'
 import { BlockEditor } from '@/features/editor/components/BlockEditor'
 import { PageCover } from './PageCover'
 import { PageIcon } from './PageIcon'
+import { DatabaseView } from '@/features/database/components/DatabaseView'
 import { supabase } from '@/lib/supabase'
 
 export function PageView() {
   const { pageId } = useParams<{ pageId: string }>()
   const { getPageById, updatePage } = usePages()
   const titleRef = useRef<HTMLTextAreaElement>(null)
+  const [databaseId, setDatabaseId] = useState<string | null>(null)
 
   const page = pageId ? getPageById(pageId) : null
+
+  // Check if page has a database
+  useEffect(() => {
+    if (!pageId) return
+    setDatabaseId(null)
+
+    const fetchDatabase = async () => {
+      const { data } = await supabase
+        .from('databases')
+        .select('id')
+        .eq('page_id', pageId)
+        .limit(1)
+        .single()
+
+      if (data) setDatabaseId(data.id)
+    }
+
+    fetchDatabase()
+  }, [pageId])
 
   // Track page visit
   useEffect(() => {
@@ -104,9 +125,19 @@ export function PageView() {
           className="mt-2 w-full resize-none overflow-hidden bg-transparent font-mono text-4xl font-bold text-notion-text-primary placeholder-notion-text-placeholder outline-none"
         />
 
+        {/* Database View (if page has a database) */}
+        {databaseId && (
+          <div className="mt-4">
+            <DatabaseView databaseId={databaseId} />
+          </div>
+        )}
+
         {/* Block Editor */}
         <div className="mt-2 pb-16">
-          <BlockEditor pageId={page.id} />
+          <BlockEditor
+            pageId={page.id}
+            onDatabaseCreated={(dbId) => setDatabaseId(dbId)}
+          />
         </div>
       </div>
     </div>

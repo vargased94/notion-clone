@@ -18,6 +18,11 @@ import {
   Video,
   Sigma,
   TableOfContents,
+  LayoutGrid,
+  Kanban,
+  ListTodo,
+  GalleryHorizontalEnd,
+  Calendar,
 } from 'lucide-react'
 import { cn } from '@/lib/cn'
 
@@ -49,6 +54,11 @@ const SLASH_ITEMS: SlashMenuItem[] = [
   { id: 'columns', label: 'Columns', description: 'Two-column layout', icon: Columns2, type: 'columns', section: 'ADVANCED' },
   { id: 'equation', label: 'Equation', description: 'LaTeX math expression', icon: Sigma, type: 'equation', section: 'ADVANCED' },
   { id: 'toc', label: 'Table of Contents', description: 'Auto-generated outline', icon: TableOfContents, type: 'tableOfContents', section: 'ADVANCED' },
+  { id: 'db-table', label: 'Database - Table', description: 'Table with properties and views', icon: LayoutGrid, type: 'database', section: 'DATABASE' },
+  { id: 'db-board', label: 'Database - Board', description: 'Kanban-style board', icon: Kanban, type: 'database-board', section: 'DATABASE' },
+  { id: 'db-list', label: 'Database - List', description: 'Simple list database', icon: ListTodo, type: 'database-list', section: 'DATABASE' },
+  { id: 'db-gallery', label: 'Database - Gallery', description: 'Card-based gallery', icon: GalleryHorizontalEnd, type: 'database-gallery', section: 'DATABASE' },
+  { id: 'db-calendar', label: 'Database - Calendar', description: 'Calendar by date', icon: Calendar, type: 'database-calendar', section: 'DATABASE' },
 ]
 
 interface SlashMenuProps {

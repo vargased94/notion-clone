@@ -123,7 +123,7 @@ CREATE TABLE workspace_invitations (
   email           TEXT NOT NULL,
   role            workspace_role NOT NULL DEFAULT 'member',
   invited_by      UUID NOT NULL REFERENCES profiles(id),
-  token           TEXT UNIQUE NOT NULL DEFAULT encode(gen_random_bytes(32), 'hex'),
+  token           TEXT UNIQUE NOT NULL DEFAULT replace(gen_random_uuid()::text || gen_random_uuid()::text, '-', ''),
   accepted_at     TIMESTAMPTZ,
   expires_at      TIMESTAMPTZ NOT NULL DEFAULT now() + INTERVAL '7 days',
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
